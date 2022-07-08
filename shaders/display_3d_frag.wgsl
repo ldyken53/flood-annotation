@@ -7,7 +7,13 @@ struct Image {
     width : u32,
     height : u32,
 };
+struct Uniforms {
+  proj_view : mat4x4<f32>,
+  eye_pos : vec4<f32>,
+  elevation_factor : f32,
+};
 
+@group(0) @binding(0) var<uniform> uniforms : Uniforms;
 @group(0) @binding(1) var colormap : texture_2d<f32>;
 @group(0) @binding(2) var<storage, read> pixels : Pixels;
 @group(0) @binding(3) var<uniform> image_size : Image;
@@ -81,7 +87,7 @@ fn main(
         var value : f32 = bilinear_interpolate(p);
         // return vec4<f32>(p.x / volume_dims.x, p.y / volume_dims.y, p.z / volume_dims.z, 1.0);
         // return vec4<f32>(value, value, value, 1.0);
-        var compare : f32 = (0.1 * value * longest_axis - f32(v000.z));
+        var compare : f32 = (uniforms.elevation_factor * value * longest_axis - f32(v000.z));
         if (0.0 < compare && compare < longest_axis) {
         // if (false) {
             var test : vec4<f32> =  textureLoad(colormap, vec2<i32>(i32(value * 180.0), 1), 0);

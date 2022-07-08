@@ -7,6 +7,7 @@ struct VertexOutput {
 struct Uniforms {
   proj_view : mat4x4<f32>,
   eye_pos : vec4<f32>,
+  elevation_factor : f32,
 };
 struct Image {
     view_box : vec4<f32>,

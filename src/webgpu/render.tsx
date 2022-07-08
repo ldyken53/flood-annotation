@@ -11,6 +11,7 @@ import elevate3 from './elevate3.json';
 
 class Renderer {
   public uniform2DBuffer : GPUBuffer | null = null;
+  public uniform3DBuffer : GPUBuffer | null = null;
   public device : GPUDevice;
   public bindGroup2D : GPUBindGroup | null = null;
   public colorTexture : GPUTexture | null = null;
@@ -229,10 +230,11 @@ class Renderer {
     device.queue.writeBuffer(this.uniform2DBuffer, 0, new Float32Array([0, 0, 1, 1]), 0, 4);
     device.queue.writeBuffer(this.uniform2DBuffer, 4 * 4, new Uint32Array([eWidth, eHeight]), 0, 2);
 
-    var uniform3DBuffer = device.createBuffer({
-      size: 20 * 4,
+    this.uniform3DBuffer = device.createBuffer({
+      size: 21 * 4,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
+    device.queue.writeBuffer(this.uniform3DBuffer!, 20 * 4, new Float32Array([0.1]), 0, 1);
 
     // Load colormap texture
     this.colorTexture = device.createTexture({
@@ -294,7 +296,7 @@ class Renderer {
         {
           binding: 0,
           resource: {
-            buffer: uniform3DBuffer,
+            buffer: this.uniform3DBuffer,
           },
         },
         {
@@ -424,7 +426,7 @@ class Renderer {
           map.set(projView);
           map.set(camera.eyePos(), 16);
           upload.unmap();
-          commandEncoder.copyBufferToBuffer(upload, 0, uniform3DBuffer, 0, 20 * 4);
+          commandEncoder.copyBufferToBuffer(upload, 0, render.uniform3DBuffer!, 0, 20 * 4);
           const passEncoder = commandEncoder.beginRenderPass(renderPassDesc);
           if (render.terrainToggle) {
             passEncoder.setPipeline(pipeline3D);
@@ -493,6 +495,10 @@ class Renderer {
       [colormap.width, colormap.height, 1]
     );
     this.colormapImage = colormapImage;
+  }
+
+  setElevation(e) {
+    this.device.queue.writeBuffer(this.uniform3DBuffer!, 20 * 4, new Float32Array([e]), 0, 1);
   }
 
 }

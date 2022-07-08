@@ -90,6 +90,7 @@ class Page extends React.Component<{}, PageState> {
                 <Form.Label className={"out"} ref={this.state.iterRef} ></Form.Label>
                 <canvas ref={this.state.canvasRef} width={800} height={800}></canvas>
                 <Form.Check style={{'color': 'white', 'width': '10%'}} defaultChecked={true} onClick={(e) => this.state.renderer!.toggle3D()} type="checkbox" label="Toggle 3D"/>
+                <input type="range" defaultValue={0.1} min={0.01} max={0.5} step={0.001} onChange={(e) => this.state.renderer!.setElevation(parseFloat(e.target.value))} />
                 <canvas hidden={true} ref={this.state.outCanvasRef} width={800} height={800}></canvas>
                 <canvas hidden={true} ref={this.state.colorCanvasRef} width={180} height={1}></canvas>
             </div>
